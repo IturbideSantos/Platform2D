@@ -87,7 +87,7 @@ public class Player : MonoBehaviour
                 UnityEngine.Camera.main.GetComponent<AudioSource>().PlayOneShot(deathAudio);
                 _animator.SetTrigger("killed");
                 _gameManager.Lives--;
-                //Destroy(this.gameObject);
+                Destroy(this.gameObject);
                 break;
 
             case Death.BYFALLING:
@@ -100,13 +100,16 @@ public class Player : MonoBehaviour
 
     private void CheckRotation()
     {
-        if (_horizontal < 0.0f)
+        if (_moveActive)
         {
-            transform.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
-        }
-        else if (_horizontal > 0.0f)
-        {
-            transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+            if (_horizontal < 0.0f)
+            {
+                transform.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
+            }
+            else if (_horizontal > 0.0f)
+            {
+                transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+            }
         }
     }
 

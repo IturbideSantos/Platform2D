@@ -39,7 +39,7 @@ public class Bullet : MonoBehaviour
 
     public void OnTriggerEnter2D(Collider2D other)
     {
-        Player player = other.GetComponent<Player>();
+        PlayerController player = other.GetComponent<PlayerController>();
         Enemy enemy = other.GetComponent<Enemy>();
 
         if (player != null)

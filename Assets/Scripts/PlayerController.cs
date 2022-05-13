@@ -30,6 +30,7 @@ public class PlayerController : MonoBehaviour
     bool jumpActive;
     bool decreaseHealthActive;
     bool shootingActive;
+    bool lastPlayingAnimation = false;
 
     IEnumerator SwitchDelay(State newState, float delay)
     {
@@ -100,6 +101,8 @@ public class PlayerController : MonoBehaviour
                 jumpActive = false;
                 decreaseHealthActive = false;
                 shootingActive = false;
+
+                Killed(Death.BYENEMY);
                 break;
 
         }
@@ -158,6 +161,7 @@ public class PlayerController : MonoBehaviour
         switch (_state)
         {
             case State.START:
+                Debug.Log("START");
                 SwitchState(State.IDLE);
                 break;
             case State.IDLE:
@@ -189,9 +193,32 @@ public class PlayerController : MonoBehaviour
                 SwitchState(State.IDLE);
                 break;
             case State.DYING:
+                if (AnimatorIsPlaying("DeathByEnemy"))
+                {
+                    lastPlayingAnimation = true;
+                }
+                if (lastPlayingAnimation && !AnimatorIsPlaying("DeathByEnemy"))
+                {
+                    Debug.Log("Waiting animation end");
+                    Destroy(this.gameObject);
+                }
                 break;
         }
+        if (_gameManager.Health == 0 && _state != State.START && _state != State.DYING)
+        {
+            Debug.Log("DEAD");
+            SwitchState(State.DYING);
+        }
+    }
 
+    private bool AnimatorIsPlaying(string animationName)
+    {
+        return _animator.GetCurrentAnimatorStateInfo(0).length >
+               _animator.GetCurrentAnimatorStateInfo(0).normalizedTime &&
+               _animator.GetCurrentAnimatorStateInfo(0).IsName(animationName);
+    }
+    private void FixedUpdate()
+    {
         Move();
 
         CheckRotation();
@@ -199,16 +226,14 @@ public class PlayerController : MonoBehaviour
         CheckGrounded();
     }
 
-    private void FixedUpdate()
-    {
-        
-    }
-
     private void Move()
     {
-        _rb.velocity = new Vector2(_horizontal * speed, _rb.velocity.y);
+        if (moveActive)
+        {
+            _rb.velocity = new Vector2(_horizontal * speed, _rb.velocity.y);
 
-        if (_grounded) _animator.SetBool("running", _horizontal != 0);
+            if (_grounded) _animator.SetBool("running", _horizontal != 0);
+        }
     }
 
     private void Killed(Death dead)
@@ -219,7 +244,6 @@ public class PlayerController : MonoBehaviour
                 UnityEngine.Camera.main.GetComponent<AudioSource>().PlayOneShot(deathAudio);
                 _animator.SetTrigger("killed");
                 _gameManager.Lives--;
-                //Destroy(this.gameObject);
                 break;
 
             case Death.BYFALLING:
@@ -232,13 +256,16 @@ public class PlayerController : MonoBehaviour
 
     private void CheckRotation()
     {
-        if (_horizontal < 0.0f)
+        if (moveActive)
         {
-            transform.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
-        }
-        else if (_horizontal > 0.0f)
-        {
-            transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+            if (_horizontal < 0.0f)
+            {
+                transform.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
+            }
+            else if (_horizontal > 0.0f)
+            {
+                transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+            }
         }
     }
 
@@ -265,30 +292,31 @@ public class PlayerController : MonoBehaviour
     }
     private void Jump()
     {
-        _rb.AddForce(Vector2.up * jumpHeight);
-        UnityEngine.Camera.main.GetComponent<AudioSource>().PlayOneShot(jumpAudio);
+        if (jumpActive)
+        {
+            _rb.AddForce(Vector2.up * jumpHeight);
+            UnityEngine.Camera.main.GetComponent<AudioSource>().PlayOneShot(jumpAudio);
+        }
     }
 
     private void Shoot()
     {
-        Vector3 direction;
-        if (transform.localScale.x == 1) direction = Vector2.right;
-        else direction = Vector2.left;
+        if (shootingActive)
+        {
+            Vector3 direction;
+            if (transform.localScale.x == 1) direction = Vector2.right;
+            else direction = Vector2.left;
 
-        GameObject bullet = Instantiate(bulletPrefab, transform.position + direction * 0.1f, Quaternion.identity);
-        bullet.GetComponent<Bullet>().SetDirection(direction);
-        _animator.SetTrigger("shooting");
+            GameObject bullet = Instantiate(bulletPrefab, transform.position + direction * 0.1f, Quaternion.identity);
+            bullet.GetComponent<Bullet>().SetDirection(direction);
+            _animator.SetTrigger("shooting");
+        }
     }
 
     public void DecreaseHealth()
     {
         _gameManager.Health--;
         Camera.main.GetComponent<AudioSource>().PlayOneShot(hurtAudio);
-        if (_gameManager.Health == 0)
-        {
-            Killed(Death.BYENEMY);
-        }
-
         _animator.SetTrigger("hit");
     }
 
