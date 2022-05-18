@@ -180,5 +180,15 @@ public class Player : MonoBehaviour
             
             Killed(Death.BYFALLING);
         }
+        else if (collision.tag == "Bullet")
+        {
+            Debug.Log("Hit");
+            DecreaseHealth();
+        }
+        else if (collision.tag == "Checkpoint")
+        {
+            _gameManager.PlayerLastLocation = collision.transform.position;
+            collision.GetComponent<SpriteRenderer>().color = Color.yellow;
+        }
     }
 }

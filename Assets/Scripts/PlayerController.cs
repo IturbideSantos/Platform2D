@@ -31,6 +31,7 @@ public class PlayerController : MonoBehaviour
     bool decreaseHealthActive;
     bool shootingActive;
     bool lastPlayingAnimation = false;
+    private bool _dead;
 
     IEnumerator SwitchDelay(State newState, float delay)
     {
@@ -53,6 +54,7 @@ public class PlayerController : MonoBehaviour
         {
             case State.START:
                 _gameManager.Health = 3;
+                SwitchState(State.IDLE);
                 break;
             case State.IDLE:
                 moveActive = true;
@@ -158,11 +160,20 @@ public class PlayerController : MonoBehaviour
             Shoot();
         }
 
+    }
+
+    private bool AnimatorIsPlaying(string animationName)
+    {
+        return _animator.GetCurrentAnimatorStateInfo(0).length >
+               _animator.GetCurrentAnimatorStateInfo(0).normalizedTime &&
+               _animator.GetCurrentAnimatorStateInfo(0).IsName(animationName);
+    }
+    private void FixedUpdate()
+    {
         switch (_state)
         {
             case State.START:
                 Debug.Log("START");
-                SwitchState(State.IDLE);
                 break;
             case State.IDLE:
                 if (_horizontal != 0) SwitchState(State.RUNNING);
@@ -193,32 +204,16 @@ public class PlayerController : MonoBehaviour
                 SwitchState(State.IDLE);
                 break;
             case State.DYING:
-                if (AnimatorIsPlaying("DeathByEnemy"))
-                {
-                    lastPlayingAnimation = true;
-                }
-                if (lastPlayingAnimation && !AnimatorIsPlaying("DeathByEnemy"))
-                {
-                    Debug.Log("Waiting animation end");
-                    Destroy(this.gameObject);
-                }
+                WaitAnimation("DeathByEnemy", 1);
                 break;
         }
-        if (_gameManager.Health == 0 && _state != State.START && _state != State.DYING)
+        if (_gameManager.Health == 0 && _state != State.START && _state != State.DYING && !_dead)
         {
             Debug.Log("DEAD");
+            _dead = true;
             SwitchState(State.DYING);
         }
-    }
 
-    private bool AnimatorIsPlaying(string animationName)
-    {
-        return _animator.GetCurrentAnimatorStateInfo(0).length >
-               _animator.GetCurrentAnimatorStateInfo(0).normalizedTime &&
-               _animator.GetCurrentAnimatorStateInfo(0).IsName(animationName);
-    }
-    private void FixedUpdate()
-    {
         Move();
 
         CheckRotation();
@@ -226,6 +221,23 @@ public class PlayerController : MonoBehaviour
         CheckGrounded();
     }
 
+    private void WaitAnimation(string animationName, float delayInSec)
+    {
+        if (AnimatorIsPlaying(animationName))
+        {
+            lastPlayingAnimation = true;
+        }
+        else if (lastPlayingAnimation && !AnimatorIsPlaying("DeathByEnemy"))
+        {
+            StartCoroutine(AnimationFinished(delayInSec));
+        }
+    }
+
+    IEnumerator AnimationFinished(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        Destroy(this.gameObject);
+    }
     private void Move()
     {
         if (moveActive)
@@ -325,7 +337,19 @@ public class PlayerController : MonoBehaviour
         if (collision.tag == "DeathZone")
         {
             Debug.Log("DeathZone");
+
             Killed(Death.BYFALLING);
+        }
+        else if (collision.tag == "Bullet")
+        {
+            Debug.Log("Hit");
+            DecreaseHealth();
+        }
+        else if (collision.tag == "Checkpoint")
+        {
+
+            _gameManager.PlayerLastLocation = collision.transform.position;
+            collision.GetComponent<SpriteRenderer>().color = Color.yellow;
         }
     }
 }

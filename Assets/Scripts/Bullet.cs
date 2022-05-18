@@ -39,21 +39,10 @@ public class Bullet : MonoBehaviour
 
     public void OnTriggerEnter2D(Collider2D other)
     {
-        Player player = other.GetComponent<Player>();
-        Enemy enemy = other.GetComponent<Enemy>();
-
-        if (player != null)
+        if (other.tag != "Checkpoint")
         {
-            player.DecreaseHealth();
+            DestroyBullet();
         }
-
-        if (enemy != null)
-        {
-            enemy.DecreaseHealth();
-            Debug.Log("enemy hit");
-        }
-
-        DestroyBullet();
     }
 
 }

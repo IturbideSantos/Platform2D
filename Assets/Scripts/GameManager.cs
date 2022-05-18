@@ -29,7 +29,15 @@ public class GameManager : MonoBehaviour
     bool _isSwitchingState;
     public Image[] CharLives;
 
+    private Vector3 playerLastCheckpoint;
+
+    public Vector3 PlayerLastLocation
+    {
+        get { return playerLastCheckpoint; }
+        set { playerLastCheckpoint = value; }
+    }
     private int _lives;
+    
     public int Lives
     {
         get { return _lives; }
@@ -158,6 +166,7 @@ public class GameManager : MonoBehaviour
                 else
                 {
                     _currentLevel = Instantiate(levels[Level]);
+                    playerLastCheckpoint = playerPrefab.transform.position;
                     SwitchState(State.PLAY);
                 }
                 break;
@@ -181,7 +190,8 @@ public class GameManager : MonoBehaviour
                 {
                     if (Lives > 0)
                     {
-                        _currentPlayer = Instantiate(playerPrefab);
+                        _currentPlayer = Instantiate(playerPrefab, PlayerLastLocation, Quaternion.identity);
+                        _currentPlayer.transform.position = playerLastCheckpoint;
                         UnityEngine.Camera.main.GetComponent<CameraScript>().player = _currentPlayer;
                         
                     }
@@ -231,7 +241,6 @@ public class GameManager : MonoBehaviour
                 break;
         }
     }
-
 
 
 }

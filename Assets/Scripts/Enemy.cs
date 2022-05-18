@@ -63,4 +63,16 @@ public class Enemy : MonoBehaviour
         if (health == 0) Destroy(gameObject);
         Camera.main.GetComponent<AudioSource>().PlayOneShot(hurtAudio);
     }
+
+    public void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "DeathZone")
+        {
+            Destroy(gameObject);
+        }
+        else if (collision.tag == "Bullet")
+        {
+            DecreaseHealth();
+        }
+    }
 }
