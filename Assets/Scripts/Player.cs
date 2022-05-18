@@ -177,6 +177,7 @@ public class Player : MonoBehaviour
         if (collision.tag == "DeathZone")
         {
             Debug.Log("DeathZone");
+            
             Killed(Death.BYFALLING);
         }
     }

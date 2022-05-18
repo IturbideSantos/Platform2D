@@ -6,16 +6,19 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public GameObject playerPrefab;
-    public Text livesText;
-    public Text levelText;
-    public Text healthText;
+    public Image[] HealthBar;
 
     public GameObject panelMenu;
     public GameObject panelPlay;
     public GameObject panelLevelCompleted;
     public GameObject panelGameOver;
 
+    public Image[] LevelDozen;
+    public Image[] LevelUnity;
+
     public GameObject[] levels;
+
+    //public GameObject CharLifeIcon;
 
     public static GameManager Instance { get; private set; }
 
@@ -24,6 +27,7 @@ public class GameManager : MonoBehaviour
     GameObject _currentPlayer;
     GameObject _currentLevel;
     bool _isSwitchingState;
+    public Image[] CharLives;
 
     private int _lives;
     public int Lives
@@ -32,7 +36,14 @@ public class GameManager : MonoBehaviour
         set
         {
             _lives = value;
-            livesText.text = "Lives: " + _lives;
+            for (var i = 0; i < _lives; i++)
+            {
+                CharLives[i].enabled = true;
+            }
+            for (var i = _lives; i < CharLives.Length; i++)
+            {
+                CharLives[i].enabled = false;
+            }
         }
     }
 
@@ -43,7 +54,14 @@ public class GameManager : MonoBehaviour
         set
         {
             _health = value;
-            healthText.text = "Health: " + _health;
+            for (var i = 0; i < _health; i++)
+            {
+                HealthBar[i].enabled = true;
+            }
+            for (var i = _health; i < HealthBar.Length; i++)
+            {
+                HealthBar[i].enabled = false;
+            }
         }
     }
 
@@ -59,7 +77,19 @@ public class GameManager : MonoBehaviour
         set
         {
             _level = value;
-            levelText.text = "LEVEL: " + _level;
+            int levelCorrected = _level + 1;
+            for (var i = 0; i < LevelDozen.Length; i++)
+            {
+                int unity = levelCorrected % 10; // Improve to avoid compilation errors
+                int dozen = levelCorrected / 10; // Improve to avoid compilation 
+
+                if (i == dozen) LevelDozen[i].enabled = true;
+                else LevelDozen[i].enabled = false;
+
+                if (i == unity) LevelUnity[i].enabled = true;
+                else LevelUnity[i].enabled = false;
+
+            }
         }
     }
 

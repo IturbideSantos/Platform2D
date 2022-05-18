@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 682633327571849570}
   - component: {fileID: 682633327571849569}
   - component: {fileID: 682633327571849574}
-  - component: {fileID: -5803876208381883554}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -150,28 +149,9 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 682633327571849568}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cab6d8a7faab5f549b01dd96d8fed8a4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  jumpAudio: {fileID: 8300000, guid: 102ef2f85e0b9f2468cf04e10202f84a, type: 3}
-  landingAudio: {fileID: 8300000, guid: 99c83f14697cbcc4aa7e5c2f443d7f81, type: 3}
-  deathAudio: {fileID: 8300000, guid: 739b17c3b57fbb749a53e1c0367d7cf0, type: 3}
-  hurtAudio: {fileID: 8300000, guid: 6ef4ef06a7e1f924db77485c110a6671, type: 3}
-  bulletPrefab: {fileID: 4511689811395867161, guid: 8fd6eadca074e1547a61e13b59d9f2bd, type: 3}
-  jumpHeight: 200
-  speed: 1.8
---- !u!114 &-5803876208381883554
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 682633327571849568}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da61da932426cbe418d464e271f58946, type: 3}
+  m_Script: {fileID: 11500000, guid: cab6d8a7faab5f549b01dd96d8fed8a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   jumpAudio: {fileID: 8300000, guid: 102ef2f85e0b9f2468cf04e10202f84a, type: 3}
